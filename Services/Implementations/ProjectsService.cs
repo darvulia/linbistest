@@ -33,7 +33,6 @@ namespace Services.Implementations
                     appContext.Add(project);
                     await appContext.SaveChangesAsync();
                     transaction.Commit();
-                    //return model.id;
                 }
                 catch (Exception e)
                 {

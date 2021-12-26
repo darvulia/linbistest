@@ -17,34 +17,34 @@ namespace WebAPI.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsService projectsService;
-        private readonly ILogger logger;
+        private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
-        public ProjectsController(IProjectsService projectsService, IMapper mapper)
+        public ProjectsController(IProjectsService projectsService, IMapper mapper, ILogger<ProjectsController> logger)
         {
             this.projectsService = projectsService;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        //[HttpGet("{id}", Name = "GetEmployeeById")]
-        //public async Task<IActionResult> Get(int id)
-        //{
-        //    try
-        //    {
-        //        var result = await employeeService.GetById(id);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest($"{BadRequest().StatusCode} : {ex.Message}");
-        //    }
-
-
-        //}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var result = await projectsService.GetById(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{BadRequest().StatusCode} : {ex.Message}");
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProjectViewModel request)
         {
+            _logger.LogInformation("begin create project");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -55,46 +55,20 @@ namespace WebAPI.Controllers
                 var model = _mapper.Map<Project>(request);
                 await projectsService.CreateProject(model);
                 return Ok();
-                //return new CreatedAtRouteResult("GetEmployeeById", new { id = employee.id }, employee);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "ERROR to create project");
                 return BadRequest();
             }
         }
-
-
-        //[HttpPut]
-        //public async Task<IActionResult> Put([FromBody] Employee employee)
-        //{
-
-        //    if (!ModelState.IsValid)
-        //    {
-
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    try
-        //    {
-        //        var result = await employeeService.UpdateEmployee(employee);
-
-        //        return new CreatedAtRouteResult("GetEmployeeById", new { id = employee.id }, employee);
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
-        //    }
-
-
-        //}
-
-
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             try
             {
+                _logger.LogInformation("Begin delete for project id {id}", id);
                 var project = await projectsService.GetById(id);
                 if (project == null)            
                     return NotFound();
@@ -102,8 +76,9 @@ namespace WebAPI.Controllers
                 await projectsService.DeleteProject(project);
                 return NoContent();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "ERROR to eliminar project : {id}", id);
                 return BadRequest();
             }
         }
