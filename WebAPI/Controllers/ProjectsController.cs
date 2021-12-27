@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetProjectById")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -54,7 +55,7 @@ namespace WebAPI.Controllers
             {
                 var model = _mapper.Map<Project>(request);
                 await projectsService.CreateProject(model);
-                return Ok();
+                return new CreatedAtRouteResult("GetProjectById", new { id = model.id }, model);
             }
             catch (Exception ex)
             {

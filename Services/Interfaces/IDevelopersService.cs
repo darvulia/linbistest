@@ -8,9 +8,10 @@ namespace Services.Interfaces
 {
     public interface IDevelopersService
     {
-        Task<Developer> GetById(int id);
+        Task<Project> GetById(int id);
         Task CreateDeveloper(Developer developer);
         Task<Developer> UpdateDeveloper(Developer developer);
         Task DeleteDeveloper(Developer developer);
+        Task<Project> projectExist(int id);
     }
 }

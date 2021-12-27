@@ -18,10 +18,28 @@ namespace Services.Implementations
             this.appContext = appContext;
         }
 
-        public async Task<Developer> GetById(int id)
+        public async Task<Project> GetById(int id)
         {
-            var res = await appContext.Developers.Where(x => x.id == id).FirstOrDefaultAsync();
-            return res;
+            var res = await appContext
+                            .Projects
+                            .Include(x=> x.Developers)
+                            .Where(x => x.id == id).ToListAsync();
+
+            var devs = res.SelectMany(x=> x.Developers);
+
+
+            var pro = res.Select(x => new Project
+            {
+                name = x.name,
+                isActive = x.isActive,
+                addedDate = x.addedDate,
+                effortRequireInDays = x.effortRequireInDays,
+                developmentCost = (double)devs.Sum(x => x.costByDay) * x.effortRequireInDays,
+                Developers = devs.ToList()
+            }).FirstOrDefault();
+
+
+            return pro;
         }
 
         public async Task CreateDeveloper(Developer developer)
@@ -83,6 +101,14 @@ namespace Services.Implementations
                 }
             }
         }
+
+
+        public async Task<Project> projectExist(int id)
+        {
+            var res = await appContext.Projects.Where(x => x.id == id).FirstOrDefaultAsync();
+            return res;
+        }
+
 
     }
 }

@@ -8,6 +8,7 @@ namespace Data
 {
     public class Project
     {
+
         [Key]
         public int id { get; set; }
         [Required]
@@ -16,6 +17,10 @@ namespace Data
         public bool isActive { get; set; }
         public DateTimeOffset addedDate { get; set; }
         [NotMapped]
+        public int effortRequireInDays { get; set; } = 30;
+        [NotMapped]
         public double developmentCost { get; set; }
+
+        public ICollection<Developer> Developers { get; set; }
     }
 }

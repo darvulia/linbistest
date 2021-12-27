@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using WebAPI.AutoMapper;
+using Newtonsoft.Json;
 
 namespace WebAPI
 {
@@ -32,6 +33,11 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMvc()
+     .AddNewtonsoftJson(
+          options => {
+              options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+          });
 
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("dbCon")));
 
@@ -43,8 +49,9 @@ namespace WebAPI
             services.AddSingleton(mapper);
             services.AddScoped<IDevelopersService, DevelopersService>();
             services.AddScoped<IProjectsService, ProjectsService>();
-        
-        
+
+           
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
